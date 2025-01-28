@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bloqueador de Sites</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .btn {
+            display: block;
+            width: 200px;
+            padding: 10px;
+            margin: 10px auto;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .btn.restore {
+            background-color: #dc3545;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        #status {
+            margin: 20px;
+            padding: 10px;
+            color: #333;
+            min-height: 50px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .sites-list {
+            margin-top: 20px;
+            text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .sites-list h3 {
+            color: #666;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 18px;
+        }
+        .sites-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            margin: 0 20px;
+        }
+        .sites-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .sites-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .sites-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .sites-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .site-item {
+            padding: 6px 10px;
+            color: #666;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .site-item:last-child {
+            border-bottom: none;
+        }
+        .site-item:hover {
+            background-color: #e9ecef;
+        }
+        .category {
+            color: #007bff;
+            font-weight: bold;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        .site-icon {
+            margin-right: 10px;
+            color: #6c757d;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Bloqueador de Sites</h1>
+        <button class="btn" onclick="blockSites()">
+            <i class="fas fa-shield-alt"></i> Bloquear Sites
+        </button>
+        <button class="btn restore" onclick="restoreHosts()">
+            <i class="fas fa-undo"></i> Restaurar Original
+        </button>
+        <div id="status"></div>
+        
+        <div class="sites-list">
+            <h3><i class="fas fa-list"></i> Sites que serão bloqueados</h3>
+            <div class="sites-container" id="sitesList">
+                <!-- Sites serão inseridos aqui via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        async function blockSites() {
+            const status = document.getElementById('status');
+            status.innerText = 'Processando...';
+            const result = await ipcRenderer.invoke('block-sites');
+            status.innerText = result.message;
+        }
+
+        async function restoreHosts() {
+            const status = document.getElementById('status');
+            status.innerText = 'Processando...';
+            const result = await ipcRenderer.invoke('restore-hosts');
+            status.innerText = result.message;
+        }
+
+        // Carregar lista de sites
+        async function loadSitesList() {
+            const sites = await ipcRenderer.invoke('get-block-list');
+            const container = document.getElementById('sitesList');
+            let currentCategory = '';
+
+            sites.forEach(site => {
+                if (site.startsWith('#')) {
+                    currentCategory = site;
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'category';
+                    categoryDiv.innerHTML = `<i class="fas fa-folder"></i> ${site.replace('#', '').trim()}`;
+                    container.appendChild(categoryDiv);
+                } else if (site.trim() !== '') {
+                    const siteDiv = document.createElement('div');
+                    siteDiv.className = 'site-item';
+                    siteDiv.innerHTML = `<i class="fas fa-globe site-icon"></i> ${site}`;
+                    container.appendChild(siteDiv);
+                }
+            });
+        }
+
+        // Carregar lista quando a página iniciar
+        window.onload = loadSitesList;
+    </script>
+</body>
+
+</html>

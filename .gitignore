@@ -1,0 +1,46 @@
+# Dependências
+/node_modules
+/package-lock.json
+
+# Build e distribuição
+/dist
+/build
+/release
+*.exe
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs e editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Electron
+.electron-builder.env
+
+# Arquivos temporários
+/tmp
+/temp
+*.tmp
+*.temp
+
+# Arquivos de backup do hosts
+*.backup
+hosts.backup 

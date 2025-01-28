@@ -1,0 +1,39 @@
+{
+  "name": "site-blocker",
+  "version": "1.0.0",
+  "description": "Bloqueador de Sites para Windows",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "clean": "rimraf node_modules dist package-lock.json && npm install"
+  },
+  "build": {
+    "appId": "com.siteblocker.app",
+    "productName": "Bloqueador de Sites",
+    "win": {
+      "target": "portable",
+      "icon": "icon.ico",
+      "requestedExecutionLevel": "requireAdministrator",
+      "artifactName": "BloqueadorDeSites.exe"
+    },
+    "asar": false,
+    "files": [
+      "main.js",
+      "index.html",
+      "blocklist.js",
+      "icon.ico"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    }
+  },
+  "author": "AppLeads Tecnologia",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "19.0.0",
+    "electron-builder": "^22.10.5",
+    "rimraf": "^5.0.1"
+  }
+}
